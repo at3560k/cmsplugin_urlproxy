@@ -1,0 +1,9 @@
+[
+    {
+        "model" : "cmsplugin_urlproxy.WhiteListedURLs",
+        "pk" : 1,
+        "fields" : {
+            "allowed_url" : "http://www.epa.gov/airnow/today/anim_aqi_co_ut_az_nm.gif"
+        }
+    }
+]

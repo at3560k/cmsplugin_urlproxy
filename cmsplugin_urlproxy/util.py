@@ -3,26 +3,10 @@
 """
 utilities.py
    Utility/wrapper functions
-
-RCS Info:
-   $Id: util.py 1340 2012-05-15 15:07:17Z jbrown $
-
-   Last Revised    :  $Date: 2012-05-15 09:07:17 -0600 (Tue, 15 May 2012) $
-   By              :  $Author: jbrown $
-   Rev             :  $Rev: 1340 $
-
-TODO:
-  - Default copyright notice
-  - Config file for directory paths
-
 """
 
 import urllib2
-import cookielib
-import os
-
-# this plugin's settings
-import settings as mySet
+from cmsplugin_urlproxy import settings as urlproxy_settings
 
 
 #################################################
@@ -32,48 +16,48 @@ import settings as mySet
 #------------------------------------------------------------------------
 def sessionlessProxyFetch(url):
     """
-    Fetch a URL from our proxy server.  Should be very fast and avoid caching
-    issues.  Note, this doesn't use IBIS cookies...
-
+    Fetch a URL from our configured proxy server.
     >>> data = sessionlessProxyFetch('http://www.example.com')
     >>> data.read()[:20]
     '<!DOCTYPE html PUBLI'
     """
-    opener = urllib2.build_opener(__myProxyHandler())
+    if urlproxy_settings.USE_SQUID:
+        return __squidProxyFetch(url)
+    else:
+        return __cacheProxyFetch(url)
+#------------------------------------------------------------------------
+
+#------------------------------------------------------------------------
+def __cacheProxyFetch(url):
+    """
+    Fetch a URL from the django cache.  Least preferred.
+    """
+
+    from StringIO import StringIO
+    from django.core.cache import cache
+
+    if not cache.has_key(url):
+        opener = urllib2.build_opener()
+        data = opener.open(url)
+        cache.set(url, data.read() )
+
+    # Wrap in file-like now that we have it.
+    return StringIO(cache.get(url))
+
+#------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------
+def __squidProxyFetch(url):
+    """
+    Fetch a URL from SQUID.  Assumes Squid properly configured.
+    """
+    opener = urllib2.build_opener(
+        urllib2.ProxyHandler(urlproxy_settings.SQUID_CONFIG)
+    )
     return opener.open(url)
 #------------------------------------------------------------------------
 
-#------------------------------------------------------------------------
-def proxyFetch(cjLocation, url):
-    """
-    Fetch URL from the proxy server, but point at a cookiejar
-    cjLocation: str: /path/to/my/cookiejar file
-    url : str : the URL
-    """
-
-    cj = cookielib.MozillaCookieJar()
-
-    if os.path.isfile(cjLocation):
-        cj.load(cjLocation, ignore_discard=True)
-        # Yeah Python, let's just throw out session cookies because it's
-        # easier by default
-
-    opener = urllib2.build_opener(
-        urllib2.HTTPCookieProcessor(cj),
-        __myProxyHandler(),
-        urllib2.HTTPRedirectHandler
-    )
-    result = opener.open(url)
-    cj.save(cjLocation, ignore_discard=True)
-    return result
-#------------------------------------------------------------------------
-
-#################################################
-#      Private Functions
-#################################################
-
-#------------------------------------------------------------------------
-def __myProxyHandler():
-    return urllib2.ProxyHandler(mySet.SQUID_CONFIG)
-#------------------------------------------------------------------------
-
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

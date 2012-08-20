@@ -6,8 +6,8 @@ admin.py
 """
 
 from django.conf import settings as settings
-from django.contrib.gis import admin
-import models
+from django.contrib import admin
+from cmsplugin_urlproxy import models
 
 import sys
 import inspect
@@ -23,7 +23,7 @@ class MYWhiteListedURLsAdmin(admin.ModelAdmin):
 
 
 #################################################
-# Inspection loading modules
+# Inspection loading modules: Show all admin classes
 #################################################
 current_module = sys.modules[__name__]
 for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass):

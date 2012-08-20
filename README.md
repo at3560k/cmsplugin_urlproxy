@@ -47,8 +47,6 @@ Yes, we're re-securing insecure content.  In the case of an <img src> there
 isn't a lot of potential catastrophe here that would not happen if we inserted
 the plain http anyway.
 
-Squidutils.  Probably needs a better name.  Like "Insecure Proxy Bandaid"
-
 TODO:
   - SSL Handling
     - I don't do certificate validation (and proxying SSL could be useful if you
@@ -59,5 +57,6 @@ TODO:
   - Remove 'requirement' for squid.  This is really a SSL signing URL proxy.
 
 To Use:
-  1) Have Squid running locally
-  2) Add app.plugins.squidutils to INSTALLED_APPS 
+
+1. Have Squid running locally
+2. Add app.plugins.squidutils to INSTALLED_APPS 

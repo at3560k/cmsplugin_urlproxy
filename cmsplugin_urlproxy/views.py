@@ -1,17 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-RCS Info:
-   $Id: views.py 1340 2012-05-15 15:07:17Z jbrown $
+views.py
 
-   Last Revised    :  $Date: 2012-05-15 09:07:17 -0600 (Tue, 15 May 2012) $
-   By              :  $Author: jbrown $
-   Rev             :  $Rev: 1340 $
-
-TODO:
-  - Default copyright notice
-  - Config file for directory paths
-
+Defines Proxy Fetching routine
 """
 
 # pylint -- name convention
@@ -21,9 +13,11 @@ TODO:
 
 from django.http import HttpResponse, HttpResponseForbidden, \
         HttpResponseServerError
-from models import WhiteListedURLs
 
-from util import sessionlessProxyFetch
+from django.utils.translation import ugettext_lazy as _
+
+from cmsplugin_urlproxy.models import WhiteListedURLs
+from cmsplugin_urlproxy.util import sessionlessProxyFetch
 
 
 
@@ -49,12 +43,12 @@ def SSLProxyFetch(request, proto, resource):
     try:
         WhiteListedURLs.objects.get(allowed_url = myURL)
     except WhiteListedURLs.DoesNotExist:
-        return HttpResponseForbidden('Requested Resource Denied')
+        return HttpResponseForbidden(_('Requested Resource Denied'))
 
     try:
         spf = sessionlessProxyFetch(myURL)
     except:
-        raise HttpResponseServerError('Unknown problem proxying Resource')
+        raise HttpResponseServerError(_('Unknown problem proxying Resource'))
 
     headers = spf.info().headers
     headers_d = dict(
