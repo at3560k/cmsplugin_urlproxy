@@ -60,6 +60,8 @@ To Use:
 
 1. Have Squid running locally
 2. Add cmsplugin_urlproxy  to INSTALLED_APPS 
+3. Run syncdb to install tables
+4. CMS Admin users can now edit URLs
 
 Alternately: Have a Django cache configured via core application settings.
 This will use a URI namespace in the cache.  Mangling prefix key is available in variable
