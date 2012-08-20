@@ -36,13 +36,15 @@ def __cacheProxyFetch(url):
     from StringIO import StringIO
     from django.core.cache import cache
 
-    if not cache.has_key(url):
+    key = urlproxy_settings.CACHE_PREFIX + url
+
+    if not cache.has_key(key):
         opener = urllib2.build_opener()
         data = opener.open(url)
-        cache.set(url, data.read() )
+        cache.set(key, data.read() )
 
     # Wrap in file-like now that we have it.
-    return StringIO(cache.get(url))
+    return StringIO(cache.get(key))
 
 #------------------------------------------------------------------------
 

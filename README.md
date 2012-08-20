@@ -59,4 +59,9 @@ TODO:
 To Use:
 
 1. Have Squid running locally
-2. Add app.plugins.squidutils to INSTALLED_APPS 
+2. Add cmsplugin_urlproxy  to INSTALLED_APPS 
+
+Alternately: Have a Django cache configured via core application settings.
+This will use a URI namespace in the cache.  Mangling prefix key is available in variable
+PROXY_CACHE_PREFIX
+
