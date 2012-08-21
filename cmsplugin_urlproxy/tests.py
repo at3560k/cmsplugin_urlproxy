@@ -5,11 +5,21 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 
-from django.utils import unittest
+from django.test import TestCase
 from django.test.client import Client
+import settings
 
-class ProxyWhiteListTest(unittest.TestCase):
-    fixtures=['testData/whitelisted.json']
+class ProxyWhiteListTest(TestCase):
+    fixtures=['southrockies.json']
+
+    def setUp(self):
+        self.old_squid = settings.USE_SQUID
+        settings.USE_SQUID = False
+        #TODO: coverage gap
+
+    def tearDown(self):
+        settings.USE_SQUID = self.old_squid
+
 
     def test_rejection(self):
         """
@@ -24,7 +34,7 @@ class ProxyWhiteListTest(unittest.TestCase):
         Test that a permitted URL is sent
         """
         c = Client()
-        response = c.get('http://www.epa.gov/airnow/today/anim_aqi_co_ut_az_nm.gif')
+        response = c.get("/ssl/http://airquality.weather.gov/images/southrockies/smokes12_southrockies.png")
         self.failUnlessEqual(response.status_code, 200)
 
 #class SimpleTest(TestCase):
