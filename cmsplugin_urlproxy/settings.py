@@ -31,3 +31,11 @@ USE_SQUID = getattr(settings, 'USE_SQUID',
 
 CACHE_PREFIX = getattr(settings, 'PROXY_CACHE_PREFIX',
     DEFAULT_PROXY_CACHE_PREFIX)
+
+# 5 seconds -- Note, this update now requires python2.6
+#  it could be worked around via monkeypatching socket.settimeout,
+#  but I have not yet confirmed if that is threadsafe
+DEFAULT_REQUEST_TIMEOUT = 5
+REQUEST_TIMEOUT = getattr(settings, 'REQUEST_TIMEOUT',
+    DEFAULT_REQUEST_TIMEOUT)
+

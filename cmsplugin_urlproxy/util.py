@@ -14,7 +14,7 @@ from cmsplugin_urlproxy import settings as urlproxy_settings
 #################################################
 
 #------------------------------------------------------------------------
-def sessionlessProxyFetch(url):
+def sessionlessProxyFetch(url, timeout=urlproxy_settings.REQUEST_TIMEOUT):
     """
     Fetch a URL from our configured proxy server.
     >>> data = sessionlessProxyFetch('http://www.example.com')
@@ -22,13 +22,13 @@ def sessionlessProxyFetch(url):
     '<!DOCTYPE html PUBLI'
     """
     if urlproxy_settings.USE_SQUID:
-        return __squidProxyFetch(url)
+        return __squidProxyFetch(url, timeout)
     else:
-        return __cacheProxyFetch(url)
+        return __cacheProxyFetch(url, timeout)
 #------------------------------------------------------------------------
 
 #------------------------------------------------------------------------
-def __cacheProxyFetch(url):
+def __cacheProxyFetch(url, timeout):
     """
     Fetch a URL from the django cache.  Least preferred.
 
@@ -57,7 +57,7 @@ def __cacheProxyFetch(url):
 
     if not cache.has_key(key):
         opener = urllib2.build_opener()
-        data = opener.open(url)
+        data = opener.open(url, None, timeout)
 
         toStore = {
             'headers' : data.info().headers,
@@ -75,14 +75,14 @@ def __cacheProxyFetch(url):
 
 
 #------------------------------------------------------------------------
-def __squidProxyFetch(url):
+def __squidProxyFetch(url, timeout):
     """
     Fetch a URL from SQUID.  Assumes Squid properly configured.
     """
     opener = urllib2.build_opener(
         urllib2.ProxyHandler(urlproxy_settings.SQUID_CONFIG)
     )
-    return opener.open(url)
+    return opener.open(url, None, timeout)
 #------------------------------------------------------------------------
 
 if __name__ == "__main__":
