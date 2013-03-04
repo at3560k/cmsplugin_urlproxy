@@ -48,7 +48,8 @@ def SSLProxyFetch(request, proto, resource):
     try:
         spf = sessionlessProxyFetch(myURL)
     except:
-        raise HttpResponseServerError(_('Unknown problem proxying Resource'))
+        # Probably needs a debug flag to raise or log this.
+        return HttpResponseServerError(_('Unknown problem proxying Resource'))
 
     headers = spf.info().headers
     headers_d = dict(
